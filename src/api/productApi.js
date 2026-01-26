@@ -1,6 +1,11 @@
 import api from './axios';
 
 export async function getProducts() {
-    const response = await api.get('/products');
-    return response.data; // ProductResponse[] 리스트
+  const response = await api.get('/products');
+  return response.data;
+}
+
+export async function createProduct(payload) {
+  const response = await api.post('/products', payload);
+  return response.data;
 }
