@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { createProduct, getProducts } from '../../api/productApi';
+import { createProduct, getProducts, deleteProduct } from '../../api/productApi';
 
 function AdminProductPage() {
   // 등록 폼 state
@@ -61,6 +61,20 @@ function AdminProductPage() {
     } catch (e) {
       console.error(e);
       alert('등록 실패 (콘솔 확인)');
+    }
+  };
+
+  // 삭제 버튼
+  const handleDelete = async (id) => {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+
+    try {
+      await deleteProduct(id);
+      alert('삭제 완료');
+      await fetchProducts(); // 목록 재조회
+    } catch (e) {
+      console.error(e);
+      alert('삭제 실패');
     }
   };
 
@@ -126,12 +140,14 @@ function AdminProductPage() {
             key={p.id}
             style={{ border: '1px solid #ddd', padding: 12, marginBottom: 8 }}
           >
-            <div>
-              <b>{p.name}</b>
-            </div>
+            <div><b>{p.name}</b></div>
             <div>가격: {p.price}</div>
             <div>재고: {p.stockQuantity}</div>
             <div>상태: {p.status}</div>
+
+            <button onClick={() => handleDelete(p.id)}>
+              삭제
+            </button>
           </div>
         ))
       )}
