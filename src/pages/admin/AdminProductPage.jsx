@@ -3,11 +3,22 @@ import { createProduct, getProducts, deleteProduct } from '../../api/productApi'
 
 function AdminProductPage() {
   // 등록 폼 state
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [stockQuantity, setStockQuantity] = useState('');
-  const [status, setStatus] = useState('SELLING');
-  const [thumbnailUrl, setThumbnailUrl] = useState('');
+  const [form, setForm] = useState({
+    name: '',
+    price: '',
+    stockQuantity: '',
+    status: 'SELLING',
+    thumbnailUrl: '',
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   // 목록 state
   const [products, setProducts] = useState([]);
@@ -39,22 +50,24 @@ function AdminProductPage() {
     try {
       // 숫자형은 Number로 변환 (중요)
       const payload = {
-        name,
-        price: Number(price),
-        stockQuantity: Number(stockQuantity),
-        status, // "SELLING" 그대로
-        thumbnailUrl,
+        name: form.name,
+        price: Number(form.price),
+        stockQuantity: Number(form.stockQuantity),
+        status: form.status,
+        thumbnailUrl: form.thumbnailUrl,
       };
 
       await createProduct(payload);
       alert('등록 완료!');
 
-      // 입력 초기화(선택)
-      setName('');
-      setPrice('');
-      setStockQuantity('');
-      setStatus('SELLING');
-      setThumbnailUrl('');
+      // 입력 초기화
+      setForm({
+        name: '',
+        price: '',
+        stockQuantity: '',
+        status: 'SELLING',
+        thumbnailUrl: '',
+      });
 
       // 등록 후 목록 갱신
       await fetchProducts();
@@ -87,32 +100,38 @@ function AdminProductPage() {
       <div style={{ border: '1px solid #ddd', padding: 12, marginBottom: 16 }}>
         <div style={{ marginBottom: 8 }}>
           <input
+            name='name'
             placeholder="상품명"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={form.name}
+            onChange={handleChange}
           />
         </div>
 
         <div style={{ marginBottom: 8 }}>
           <input
+            name='price'
+            type="number"
             placeholder="가격"
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            value={form.price}
+            onChange={handleChange}
           />
         </div>
 
         <div style={{ marginBottom: 8 }}>
           <input
-            placeholder="재고"
+            name='stockQuantity'
             type="number"
-            value={stockQuantity}
-            onChange={(e) => setStockQuantity(e.target.value)}
+            placeholder="재고"
+            value={form.stockQuantity}
+            onChange={handleChange}
           />
         </div>
 
         <div style={{ marginBottom: 8 }}>
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
+          <select name='status'
+            value={form.status}
+            onChange={handleChange}
+          >
             <option value="SELLING">SELLING</option>
             <option value="SOLD_OUT">SOLD_OUT</option>
             <option value="HIDDEN">HIDDEN</option>
@@ -121,9 +140,10 @@ function AdminProductPage() {
 
         <div style={{ marginBottom: 8 }}>
           <input
+            name='thumbnailUrl'
             placeholder="썸네일 URL"
-            value={thumbnailUrl}
-            onChange={(e) => setThumbnailUrl(e.target.value)}
+            value={form.thumbnailUrl}
+            onChange={handleChange}
           />
         </div>
 
