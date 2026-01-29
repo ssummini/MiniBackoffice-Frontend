@@ -13,3 +13,8 @@ export async function createProduct(payload) {
 export async function deleteProduct(productId) {
   await api.delete(`/products/${productId}`);
 }
+
+export async function updateProduct(id, data) {
+  const response = await api.put(`/products/${id}`, data);
+  return response.data;
+}
