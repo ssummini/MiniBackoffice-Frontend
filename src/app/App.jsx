@@ -5,6 +5,8 @@ import LoginPage from '../pages/public/LoginPage';
 import ProductListPage from '../pages/user/ProductListPage';
 import MyPage from '../pages/user/MyPage';
 import AdminProductPage from '../pages/admin/AdminProductPage';
+import ForbiddenPage from '../pages/public/ForbiddenPage';
+import RequireAdmin from '../auth/RequireAdmin';
 
 function App() {
     return (
@@ -20,7 +22,16 @@ function App() {
             <Route path="/me" element={<MyPage />} />
 
             {/* admin */}
-            <Route path="/admin/products" element={<AdminProductPage />} />
+            <Route
+                path="/admin/products"
+                element={
+                    <RequireAdmin>
+                        <AdminProductPage />
+                    </RequireAdmin>
+                }
+            />
+
+            <Route path="/forbidden" element={<ForbiddenPage />} />
 
             {/* 없는 경로 */}
             <Route path="*" element={<div>404 Not Found</div>} />

@@ -1,16 +1,23 @@
-# React + Vite
+# MiniBackoffice Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 역할
+- React 기반 관리자/유저 화면 구성
+- JWT 인증 기반 API 연동
 
-Currently, two official plugins are available:
+## 구조
+- api/
+  - axios.js : 공통 axios 인스턴스 + 인터셉터
+  - authApi.js / productApi.js
+- utils/
+  - token.js : accessToken 관리
+- pages/
+  - LoginPage
+  - ProductListPage
+  - AdminProductPage
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 인증 흐름
+Login → token 저장 → axios 인터셉터로 Authorization 자동 첨부
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 관리자 상품 CRUD
+- editingId로 등록/수정 모드 분기
+- 등록/수정/삭제 후 fetchProducts로 목록 재조회
