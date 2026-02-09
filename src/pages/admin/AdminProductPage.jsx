@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { createProduct, getProducts, deleteProduct, updateProduct } from '../../api/productApi';
 
+import AdminProductForm from './AdminProductForm';
+import AdminProductItem from './AdminProductItem';
+
 function AdminProductPage() {
   // 등록 폼 state
   const [form, setForm] = useState({
@@ -18,7 +21,6 @@ function AdminProductPage() {
   const [editingId, setEditingId] = useState(null);
 
   const [loading, setLoading] = useState(true);
-
   const [saving, setSaving] = useState(false);
 
 
@@ -83,8 +85,7 @@ function AdminProductPage() {
 
   // 2. editingId 있으면 수정 없으면 등록
   const handleSubmit = async () => {
-    // 저장 중 연타 방지 (중복 요청 방지)
-    if (saving) return;
+    if (saving) return;  // 저장 중 연타 방지 
 
     setSaving(true);
 
@@ -135,136 +136,28 @@ function AdminProductPage() {
 
   return (
     <div style={{ padding: 16 }}>
-      <h2>{editingId ? 'Admin - Product Edit' : 'Admin - Product Create'}</h2>
-
-      <div style={{ border: '1px solid #ddd', padding: 12, marginBottom: 16 }}>
-        <div style={{ marginBottom: 8 }}>
-          <input
-            name='name'
-            placeholder="상품명"
-            value={form.name}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div style={{ marginBottom: 8 }}>
-          <input
-            name='price'
-            type="number"
-            placeholder="가격"
-            value={form.price}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div style={{ marginBottom: 8 }}>
-          <input
-            name='stockQuantity'
-            type="number"
-            placeholder="재고"
-            value={form.stockQuantity}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div style={{ marginBottom: 8 }}>
-          <select name='status'
-            value={form.status}
-            onChange={handleChange}
-          >
-            <option value="SELLING">SELLING</option>
-            <option value="SOLD_OUT">SOLD_OUT</option>
-            <option value="HIDDEN">HIDDEN</option>
-          </select>
-        </div>
-
-        <div style={{ marginBottom: 8 }}>
-          <input
-            name='thumbnailUrl'
-            placeholder="썸네일 URL"
-            value={form.thumbnailUrl}
-            onChange={handleChange}
-          />
-        </div>
-
-        <button onClick={handleSubmit} disabled={saving}>
-          {saving ? '저장중...' : (editingId ? '상품 수정' : '상품 등록')}
-        </button>
-
-        {editingId && (
-          <button onClick={resetForm}>
-            취소
-          </button>
-        )}
-
-      </div>
+      <AdminProductForm
+        form={form}
+        editingId={editingId}
+        saving={saving}
+        onChange={handleChange}
+        onSubmit={handleSubmit}
+        onCancel={resetForm}
+      />
 
       <h3>상품 목록</h3>
 
       {products.length === 0 ? (
         <div>상품이 없습니다.</div>
       ) : (
-        products.map((p) => {
-          const statusColor =
-            p.status === 'SELLING'
-              ? 'green'
-              : p.status === 'SOLD_OUT'
-              ? 'red'
-              : '#ccc';
-
-          return (
-              <div
-                key={p.id}
-                style={{
-                  border: '1px solid #ddd',
-                  padding: 12,
-                  marginBottom: 8,
-                  opacity: p.status === 'HIDDEN' ? 0.5 : 1,
-                }}
-              >
-
-              {p.thumbnailUrl && (
-                <img
-                  src={p.thumbnailUrl}
-                  alt={p.name}
-                  style={{
-                    width: 120,
-                    height: 120,
-                    objectFit: 'cover',
-                    marginBottom: 8,
-                    borderRadius: 4,
-                  }}
-                />
-              )}
-              
-              {p.status === 'HIDDEN' && (
-                <div style={{ fontSize: 12, marginBottom: 6 }}>
-                  🔒 숨김 상품
-                </div>
-              )}
-              
-              <div><b>{p.name}</b></div>
-              <div>가격: {p.price}</div>
-              <div>재고: {p.stockQuantity}</div>
-
-              <div style={{ color: statusColor }}>
-                상태: {p.status}
-              </div>
-
-              <button
-                onClick={() => handleEdit(p)}
-                disabled={p.status === 'SOLD_OUT'}
-                style={{
-                  opacity: p.status === 'SOLD_OUT' ? 0.5 : 1,
-                  cursor: p.status === 'SOLD_OUT' ? 'not-allowed' : 'pointer',
-                }}
-              >
-                수정
-              </button>
-              <button onClick={() => handleDelete(p.id)}>삭제</button>
-            </div>
-          );
-        })
+        products.map((p) => (
+          <AdminProductItem
+            key={p.id}
+            product={p}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        ))
       )}
     </div>
   );
