@@ -19,6 +19,8 @@ function AdminProductPage() {
 
   const [loading, setLoading] = useState(true);
 
+  const [saving, setSaving] = useState(false);
+
 
   // 공통 입력 핸들러
   const handleChange = (e) => {
@@ -30,8 +32,20 @@ function AdminProductPage() {
     }));
   };
 
+  // 폼 초기화(등록/수정 완료, 수정 취소 시 공통으로 사용)
+  const resetForm = () => {
+    setEditingId(null);
+    setForm({
+      name: '',
+      price: '',
+      stockQuantity: '',
+      status: 'SELLING',
+      thumbnailUrl: '',
+    });
+  };
 
-  // 목록 불러오기 함수
+
+  // 목록 재조회 함수 (등록/수정/삭제 후 화면 갱신용)
   const fetchProducts = async () => {
     const data = await getProducts();
     setProducts(data);
@@ -69,6 +83,11 @@ function AdminProductPage() {
 
   // 2. editingId 있으면 수정 없으면 등록
   const handleSubmit = async () => {
+    // 저장 중 연타 방지 (중복 요청 방지)
+    if (saving) return;
+
+    setSaving(true);
+
     try {
       const payload = {
         name: form.name,
@@ -86,21 +105,16 @@ function AdminProductPage() {
         alert('등록 완료');
       }
 
-      setEditingId(null);
-      setForm({
-        name: '',
-        price: '',
-        stockQuantity: '',
-        status: 'SELLING',
-        thumbnailUrl: '',
-      });
-
+      resetForm();
       await fetchProducts();
     } catch (e) {
       console.error(e);
       alert(editingId ? '수정 실패' : '등록 실패');
+    } finally {
+      setSaving(false);
     }
   };
+
 
   // 3. 삭제 버튼
   const handleDelete = async (id) => {
@@ -173,26 +187,16 @@ function AdminProductPage() {
           />
         </div>
 
-        <button onClick={handleSubmit}>
-          {editingId ? '상품 수정' : '상품 등록'}
+        <button onClick={handleSubmit} disabled={saving}>
+          {saving ? '저장중...' : (editingId ? '상품 수정' : '상품 등록')}
         </button>
 
         {editingId && (
-          <button
-            onClick={() => {
-              setEditingId(null);
-              setForm({
-                name: '',
-                price: '',
-                stockQuantity: '',
-                status: 'SELLING',
-                thumbnailUrl: '',
-              });
-            }}
-          >
+          <button onClick={resetForm}>
             취소
           </button>
         )}
+
       </div>
 
       <h3>상품 목록</h3>
