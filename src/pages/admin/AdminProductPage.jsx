@@ -204,31 +204,67 @@ function AdminProductPage() {
       {products.length === 0 ? (
         <div>상품이 없습니다.</div>
       ) : (
-        products.map((p) => (
-          <div key={p.id} style={{ border: '1px solid #ddd', padding: 12, marginBottom: 8 }}>
-            {p.thumbnailUrl && (
-              <img
-                src={p.thumbnailUrl}
-                alt={p.name}
+        products.map((p) => {
+          const statusColor =
+            p.status === 'SELLING'
+              ? 'green'
+              : p.status === 'SOLD_OUT'
+              ? 'red'
+              : '#ccc';
+
+          return (
+              <div
+                key={p.id}
                 style={{
-                  width: 120,
-                  height: 120,
-                  objectFit: 'cover',
+                  border: '1px solid #ddd',
+                  padding: 12,
                   marginBottom: 8,
-                  borderRadius: 4,
+                  opacity: p.status === 'HIDDEN' ? 0.5 : 1,
                 }}
-              />
-            )}
+              >
 
-            <div><b>{p.name}</b></div>
-            <div>가격: {p.price}</div>
-            <div>재고: {p.stockQuantity}</div>
-            <div>상태: {p.status}</div>
+              {p.thumbnailUrl && (
+                <img
+                  src={p.thumbnailUrl}
+                  alt={p.name}
+                  style={{
+                    width: 120,
+                    height: 120,
+                    objectFit: 'cover',
+                    marginBottom: 8,
+                    borderRadius: 4,
+                  }}
+                />
+              )}
+              
+              {p.status === 'HIDDEN' && (
+                <div style={{ fontSize: 12, marginBottom: 6 }}>
+                  🔒 숨김 상품
+                </div>
+              )}
+              
+              <div><b>{p.name}</b></div>
+              <div>가격: {p.price}</div>
+              <div>재고: {p.stockQuantity}</div>
 
-            <button onClick={() => handleEdit(p)}>수정</button>
-            <button onClick={() => handleDelete(p.id)}>삭제</button>
-          </div>
-        ))
+              <div style={{ color: statusColor }}>
+                상태: {p.status}
+              </div>
+
+              <button
+                onClick={() => handleEdit(p)}
+                disabled={p.status === 'SOLD_OUT'}
+                style={{
+                  opacity: p.status === 'SOLD_OUT' ? 0.5 : 1,
+                  cursor: p.status === 'SOLD_OUT' ? 'not-allowed' : 'pointer',
+                }}
+              >
+                수정
+              </button>
+              <button onClick={() => handleDelete(p.id)}>삭제</button>
+            </div>
+          );
+        })
       )}
     </div>
   );
