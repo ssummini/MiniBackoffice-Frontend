@@ -205,10 +205,21 @@ function AdminProductPage() {
         <div>상품이 없습니다.</div>
       ) : (
         products.map((p) => (
-          <div
-            key={p.id}
-            style={{ border: '1px solid #ddd', padding: 12, marginBottom: 8 }}
-          >
+          <div key={p.id} style={{ border: '1px solid #ddd', padding: 12, marginBottom: 8 }}>
+            {p.thumbnailUrl && (
+              <img
+                src={p.thumbnailUrl}
+                alt={p.name}
+                style={{
+                  width: 120,
+                  height: 120,
+                  objectFit: 'cover',
+                  marginBottom: 8,
+                  borderRadius: 4,
+                }}
+              />
+            )}
+
             <div><b>{p.name}</b></div>
             <div>가격: {p.price}</div>
             <div>재고: {p.stockQuantity}</div>
