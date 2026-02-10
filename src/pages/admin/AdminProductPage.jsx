@@ -156,6 +156,7 @@ function AdminProductPage() {
             product={p}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onStatusChanged={fetchProducts}
           />
         ))
       )}

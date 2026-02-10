@@ -1,10 +1,12 @@
-function AdminProductItem({ product, onEdit, onDelete }) {
+import { updateProduct } from '../../api/productApi';
+
+function AdminProductItem({ product, onEdit, onDelete, onStatusChanged }) {
     const statusColor =
         product.status === 'SELLING'
             ? 'green'
             : product.status === 'SOLD_OUT'
-                ? 'red'
-                : '#ccc';
+            ? 'red'
+            : '#ccc';
 
     return (
         <div
@@ -39,8 +41,34 @@ function AdminProductItem({ product, onEdit, onDelete }) {
             <div>가격: {product.price}</div>
             <div>재고: {product.stockQuantity}</div>
 
-            <div style={{ color: statusColor }}>
-                상태: {product.status}
+            <div style={{ marginBottom: 8 }}>
+                상태:{' '}
+                <select
+                    value={product.status}
+                    onChange={async (e) => {
+                        const newStatus = e.target.value;
+
+                        try {
+                            await updateProduct(product.id, {
+                                name: product.name,
+                                price: product.price,
+                                stockQuantity: product.stockQuantity,
+                                status: newStatus,
+                                thumbnailUrl: product.thumbnailUrl,
+                            });
+                            alert('상태 변경 완료');
+                            await onStatusChanged(); // 목록 재조회(새로고침 X)
+                        } catch (e) {
+                            console.error(e);
+                            alert('상태 변경 실패');
+                        }
+                    }}
+                    style={{ color: statusColor }}
+                >
+                    <option value="SELLING">SELLING</option>
+                    <option value="SOLD_OUT">SOLD_OUT</option>
+                    <option value="HIDDEN">HIDDEN</option>
+                </select>
             </div>
 
             <button
