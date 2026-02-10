@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+import { removeToken } from "../../utils/token";
 import { useEffect, useState } from "react";
 import { getProducts } from "../../api/productApi";
 
@@ -5,6 +7,14 @@ function ProductListPage() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        removeToken();          // localStorage 토큰 삭제
+        navigate("/login");     // 로그인 페이지로 이동
+    };
+
+    // 페이지 최초 집인 시 상품 목록 조회
     useEffect(() => {
         async function fetchProducts() {
             try {
@@ -23,14 +33,22 @@ function ProductListPage() {
 
     if (loading) return <div>로딩중...</div>
 
+    // User 페이지에서는 판매중(SELLING) 상품만 노출
+    const visibleProducts = products.filter(
+        (p) => p.status === 'SELLING'
+    );
+
     return (
         <div>
-            <h2>Products</h2>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <h2>Products</h2>
+                <button onClick={handleLogout}>로그아웃</button>
+            </div>
 
-            {products.length === 0 ? (
+            {visibleProducts.length === 0 ? (
                 <div>상품이 없습니다.</div>
             ) : (
-                products.map((p) => (
+                visibleProducts.map((p) => (
                     <div key={p.id} style={{ border: '1px solid #ddd', padding: 12, marginBottom: 8 }}>
                         <div><b>{p.name}</b></div>
                         <div>가격: {p.price}</div>
