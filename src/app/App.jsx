@@ -1,6 +1,8 @@
 // src/app/App.jsx
 import { Routes, Route, Navigate } from 'react-router-dom';
 
+import Header from "../components/Header";
+
 import LoginPage from '../pages/public/LoginPage';
 import ProductListPage from '../pages/user/ProductListPage';
 import MyPage from '../pages/user/MyPage';
@@ -11,47 +13,49 @@ import RequireAuth from "../auth/RequireAuth";
 
 function App() {
     return (
-        <Routes>
-            {/* 기본 진입 */}
-            <Route path="/" element={<Navigate to="/login" replace />} />
+        <>
+            <Header />
+            <Routes>
+                {/* 기본 진입 */}
+                <Route path="/" element={<Navigate to="/login" replace />} />
 
-            {/* public */}
-            <Route path="/login" element={<LoginPage />} />
+                {/* public */}
+                <Route path="/login" element={<LoginPage />} />
 
-            {/* user */}
-            <Route
-                path="/products"
-                element={
-                    <RequireAuth>
-                        <ProductListPage />
-                    </RequireAuth>
-                }
-            />
+                {/* user */}
+                <Route
+                    path="/products"
+                    element={<ProductListPage />}
+                />
 
-            <Route
-                path="/me"
-                element={
-                    <RequireAuth>
-                        <MyPage />
-                    </RequireAuth>
-                }
-            />
+                {/* 로그인 필요 */}
+                <Route
+                    path="/me"
+                    element={
+                        <RequireAuth>
+                            <MyPage />
+                        </RequireAuth>
+                    }
+                />
 
-            {/* admin */}
-            <Route
-                path="/admin/products"
-                element={
-                    <RequireAdmin>
-                        <AdminProductPage />
-                    </RequireAdmin>
-                }
-            />
+                {/* 관리자 전용 */}
+                <Route
+                    path="/admin/products"
+                    element={
+                        <RequireAuth>
+                            <RequireAdmin>
+                                <AdminProductPage />
+                            </RequireAdmin>
+                        </RequireAuth>
+                    }
+                />
 
-            <Route path="/forbidden" element={<ForbiddenPage />} />
+                <Route path="/forbidden" element={<ForbiddenPage />} />
 
-            {/* 없는 경로 */}
-            <Route path="*" element={<div>404 Not Found</div>} />
-        </Routes>
+                {/* 없는 경로 */}
+                <Route path="*" element={<div>404 Not Found</div>} />
+            </Routes>
+        </>
     );
 }
 

@@ -9,11 +9,6 @@ function ProductListPage() {
 
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        removeToken();          // localStorage 토큰 삭제
-        navigate("/login");     // 로그인 페이지로 이동
-    };
-
     // 페이지 최초 집인 시 상품 목록 조회
     useEffect(() => {
         async function fetchProducts() {
@@ -40,11 +35,6 @@ function ProductListPage() {
 
     return (
         <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h2>Products</h2>
-                <button onClick={handleLogout}>로그아웃</button>
-            </div>
-
             {visibleProducts.length === 0 ? (
                 <div>상품이 없습니다.</div>
             ) : (

@@ -10,12 +10,6 @@ import { removeToken } from "../../utils/token";
 function AdminProductPage() {
   const navigate = useNavigate();
 
-  // 로그아웃
-  const handleLogout = () => {
-    removeToken();
-    navigate("/login");
-  };
-
   // 등록 폼 state
   const [form, setForm] = useState({
     name: '',
@@ -175,12 +169,6 @@ function AdminProductPage() {
       
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h2>Admin - Product</h2>
-
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={() => navigate("/products")}>유저 상품목록</button>
-          <button onClick={() => navigate("/me")}>MyPage</button>
-          <button onClick={handleLogout}>로그아웃</button>
-        </div>
       </div>
 
       <AdminProductForm

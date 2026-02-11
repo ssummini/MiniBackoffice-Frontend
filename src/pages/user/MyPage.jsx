@@ -9,11 +9,6 @@ function MyPage() {
 
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    removeToken();
-    navigate("/login");
-  };
-
   useEffect(() => {
     async function fetchMe() {
       try {
@@ -35,11 +30,6 @@ function MyPage() {
 
   return (
     <div style={{ padding: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2>My Page</h2>
-        <button onClick={handleLogout}>로그아웃</button>
-      </div>
-
       <div style={{ border: "1px solid #ddd", padding: 12, marginTop: 12 }}>
         <div>이메일: {me.email}</div>
         <div>이름: {me.name}</div>
