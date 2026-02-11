@@ -10,6 +10,7 @@ import { removeToken } from "../../utils/token";
 function AdminProductPage() {
   const navigate = useNavigate();
 
+  // 로그아웃
   const handleLogout = () => {
     removeToken();
     navigate("/login");
@@ -34,16 +35,6 @@ function AdminProductPage() {
   const [saving, setSaving] = useState(false);
 
 
-  // 공통 입력 핸들러
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   // 폼 초기화(등록/수정 완료, 수정 취소 시 공통으로 사용)
   const resetForm = () => {
     setEditingId(null);
@@ -56,6 +47,35 @@ function AdminProductPage() {
     });
   };
 
+
+  // 입력값 1차 검증(프론트)
+  // 통과하면 null, 실패하면 에러 메시지 문자열 반환
+  const validateForm = () => {
+    if (!form.name.trim()) return "상품명을 입력해주세요.";
+
+    const price = Number(form.price);
+    if (!Number.isFinite(price) || price <= 0) return "가격은 0보다 큰 숫자여야 합니다.";
+
+    const stock = Number(form.stockQuantity);
+    if (!Number.isFinite(stock) || stock < 0) return "재고는 0 이상 숫자여야 합니다.";
+
+    // 상태는 select라 보통 문제 없지만, 안전하게 체크
+    const allowed = ["SELLING", "SOLD_OUT", "HIDDEN"];
+    if (!allowed.includes(form.status)) return "상품 상태 값이 올바르지 않습니다.";
+
+    return null;
+  };
+
+
+  // 공통 입력 핸들러
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   // 목록 재조회 함수 (등록/수정/삭제 후 화면 갱신용)
   const fetchProducts = async () => {
@@ -96,6 +116,12 @@ function AdminProductPage() {
   // 2. editingId 있으면 수정 없으면 등록
   const handleSubmit = async () => {
     if (saving) return;  // 저장 중 연타 방지 
+
+    const errorMessage = validateForm();
+    if (errorMessage) {
+      alert(errorMessage);
+      return;
+    }
 
     setSaving(true);
 
@@ -145,8 +171,8 @@ function AdminProductPage() {
   if (loading) return <div>로딩중...</div>;
 
   return (
-
     <div style={{ padding: 16 }}>
+      
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h2>Admin - Product</h2>
 
@@ -156,7 +182,7 @@ function AdminProductPage() {
           <button onClick={handleLogout}>로그아웃</button>
         </div>
       </div>
-      
+
       <AdminProductForm
         form={form}
         editingId={editingId}
