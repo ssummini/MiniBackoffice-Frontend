@@ -5,8 +5,31 @@ function AdminProductItem({ product, onEdit, onDelete, onStatusChanged }) {
         product.status === 'SELLING'
             ? 'green'
             : product.status === 'SOLD_OUT'
-            ? 'red'
-            : '#ccc';
+                ? 'red'
+                : '#ccc';
+
+    const handleChangeStatus = async (nextStatus) => {
+        try {
+            // 기존 값 유지 + status만 변경
+            const payload = {
+                name: product.name,
+                price: product.price,
+                stockQuantity: product.stockQuantity,
+                thumbnailUrl: product.thumbnailUrl ?? '',
+                status: nextStatus,
+            };
+
+            await updateProduct(product.id, payload);
+            alert(`상태 변경 완료: ${nextStatus}`);
+
+            // 목록 새로고침(부모가 넘겨준 함수)
+            if (onStatusChanged) await onStatusChanged();
+        } catch (e) {
+            console.error(e);
+            alert('상태 변경 실패');
+        }
+    };
+
 
     return (
         <div
@@ -41,49 +64,38 @@ function AdminProductItem({ product, onEdit, onDelete, onStatusChanged }) {
             <div>가격: {product.price}</div>
             <div>재고: {product.stockQuantity}</div>
 
-            <div style={{ marginBottom: 8 }}>
-                상태:{' '}
-                <select
-                    value={product.status}
-                    onChange={async (e) => {
-                        const newStatus = e.target.value;
-
-                        try {
-                            await updateProduct(product.id, {
-                                name: product.name,
-                                price: product.price,
-                                stockQuantity: product.stockQuantity,
-                                status: newStatus,
-                                thumbnailUrl: product.thumbnailUrl,
-                            });
-                            alert('상태 변경 완료');
-                            await onStatusChanged(); // 목록 재조회(새로고침 X)
-                        } catch (e) {
-                            console.error(e);
-                            alert('상태 변경 실패');
-                        }
-                    }}
-                    style={{ color: statusColor }}
-                >
-                    <option value="SELLING">SELLING</option>
-                    <option value="SOLD_OUT">SOLD_OUT</option>
-                    <option value="HIDDEN">HIDDEN</option>
-                </select>
+            <div style={{ color: statusColor }}>
+                상태: {product.status}
             </div>
 
-            <button
-                onClick={() => onEdit(product)}
-                disabled={product.status === 'SOLD_OUT'}
-                style={{
-                    opacity: product.status === 'SOLD_OUT' ? 0.5 : 1,
-                    cursor: product.status === 'SOLD_OUT' ? 'not-allowed' : 'pointer',
-                    marginRight: 8,
-                }}
-            >
-                수정
-            </button>
+            <div style={{ marginTop: 8 }}>
+                <button
+                    onClick={() => onEdit(product)}
+                    disabled={product.status === 'SOLD_OUT'}
+                    style={{
+                        opacity: product.status === 'SOLD_OUT' ? 0.5 : 1,
+                        cursor: product.status === 'SOLD_OUT' ? 'not-allowed' : 'pointer',
+                        marginRight: 8,
+                    }}
+                >
+                    수정
+                </button>
 
-            <button onClick={() => onDelete(product.id)}>삭제</button>
+                <button onClick={() => onDelete(product.id)}>삭제</button>
+            </div>
+
+            {/* 상태 빠른 변경 */}
+            <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
+                <button onClick={() => handleChangeStatus('SELLING')}>
+                    SELLING
+                </button>
+                <button onClick={() => handleChangeStatus('SOLD_OUT')}>
+                    SOLD_OUT
+                </button>
+                <button onClick={() => handleChangeStatus('HIDDEN')}>
+                    HIDDEN
+                </button>
+            </div>
         </div>
     );
 }

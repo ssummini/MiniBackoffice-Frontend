@@ -4,7 +4,17 @@ import { createProduct, getProducts, deleteProduct, updateProduct } from '../../
 import AdminProductForm from './AdminProductForm';
 import AdminProductItem from './AdminProductItem';
 
+import { useNavigate } from "react-router-dom";
+import { removeToken } from "../../utils/token";
+
 function AdminProductPage() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    removeToken();
+    navigate("/login");
+  };
+
   // 등록 폼 state
   const [form, setForm] = useState({
     name: '',
@@ -135,7 +145,18 @@ function AdminProductPage() {
   if (loading) return <div>로딩중...</div>;
 
   return (
+
     <div style={{ padding: 16 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h2>Admin - Product</h2>
+
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={() => navigate("/products")}>유저 상품목록</button>
+          <button onClick={() => navigate("/me")}>MyPage</button>
+          <button onClick={handleLogout}>로그아웃</button>
+        </div>
+      </div>
+      
       <AdminProductForm
         form={form}
         editingId={editingId}
